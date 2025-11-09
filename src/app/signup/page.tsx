@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
+  const { setAuth, accessToken, _hasHydrated } = useAuthStore();
   const [isSignIn, setIsSignIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +32,13 @@ export default function SignupPage() {
     email: "",
     password: "",
   });
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (_hasHydrated && accessToken) {
+      router.push("/dashboard");
+    }
+  }, [accessToken, _hasHydrated, router]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
