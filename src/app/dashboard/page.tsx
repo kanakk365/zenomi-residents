@@ -37,6 +37,12 @@ const COURSE_NAMES: Record<string, string> = {
   "cmhxa9lrr0005qe3c7zdz9qnk": "Strengthening Emotional Bonds with Your Teen: A Parent's Guide",
 };
 
+const SINGLE_COURSE: CourseCard = {
+  id: "zenomi-course",
+  title: "Zenomi Course",
+  link: "https://kanakk365.github.io/zenomi-course/",
+};
+
 export default function Dashboard() {
   const { clinician, accessToken, _hasHydrated, setAuth } = useAuthStore();
   const router = useRouter();
@@ -135,21 +141,27 @@ export default function Dashboard() {
       try {
         const coursesData = await getCourses(accessToken);
         
-        // Map purchased courses with names and links
-        const purchased = coursesData.courses.map(course => ({
-          id: course.id,
-          title: COURSE_NAMES[course.id] || course.name || "Untitled Course",
-          link: course.link,
-        }));
+        // If either payment status is true, show only the single course
+        if (coursesData.isStandardPaid || coursesData.isPremiumPaid) {
+          setPurchasedCourses([SINGLE_COURSE]);
+          setTrendingCourses([SINGLE_COURSE]);
+        } else {
+          // Map purchased courses with names and links
+          const purchased = coursesData.courses.map(course => ({
+            id: course.id,
+            title: COURSE_NAMES[course.id] || course.name || "Untitled Course",
+            link: course.link,
+          }));
 
-        // Map all courses (trending) with names
-        const trending = coursesData.allCourses.map(course => ({
-          id: course.id,
-          title: COURSE_NAMES[course.id] || course.name || "Untitled Course",
-        }));
+          // Map all courses (trending) with names
+          const trending = coursesData.allCourses.map(course => ({
+            id: course.id,
+            title: COURSE_NAMES[course.id] || course.name || "Untitled Course",
+          }));
 
-        setPurchasedCourses(purchased);
-        setTrendingCourses(trending);
+          setPurchasedCourses(purchased);
+          setTrendingCourses(trending);
+        }
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       } finally {
@@ -179,7 +191,8 @@ export default function Dashboard() {
     setBuyPlanType(planType);
     setShowBuyModal(true);
     if (planType === "standard") {
-      setSelectedCourseIds([]);
+      // Auto-select the single course for standard plan
+      setSelectedCourseIds([SINGLE_COURSE.id]);
     }
   };
 
@@ -205,11 +218,12 @@ export default function Dashboard() {
       let response;
       if (buyPlanType === "standard") {
         if (selectedCourseIds.length === 0) {
-          alert("Please select at least one course");
+          alert("Please select the course");
           setIsProcessingCheckout(false);
           return;
         }
-        response = await checkoutStandard(accessToken, selectedCourseIds);
+        // For standard plan, always use the single course ID
+        response = await checkoutStandard(accessToken, [SINGLE_COURSE.id]);
       } else {
         response = await checkoutPremium(accessToken);
       }
@@ -456,26 +470,21 @@ export default function Dashboard() {
               {buyPlanType === "standard" ? (
                 <>
                   <p className="text-[#53456B] mb-4">
-                    Select the courses you want to purchase (₹499 each):
+                    Purchase the course (₹499):
                   </p>
                   <div className="space-y-3">
-                    {trendingCourses.map((course) => (
-                      <label
-                        key={course.id}
-                        className="flex items-start gap-3 p-4 rounded-lg border-2 border-gray-200 hover:border-[#8B2D6C] transition-colors cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedCourseIds.includes(course.id)}
-                          onChange={() => handleToggleCourse(course.id)}
-                          className="mt-1 w-5 h-5 text-[#8B2D6C] rounded focus:ring-[#8B2D6C]"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-[#2C1B3A]">{course.title}</p>
-                          <p className="text-sm text-[#8F82B0] mt-1">₹499</p>
-                        </div>
-                      </label>
-                    ))}
+                    <div className="flex items-start gap-3 p-4 rounded-lg border-2 border-[#8B2D6C] bg-[#F1E8FF]">
+                      <input
+                        type="checkbox"
+                        checked={selectedCourseIds.includes(SINGLE_COURSE.id)}
+                        onChange={() => handleToggleCourse(SINGLE_COURSE.id)}
+                        className="mt-1 w-5 h-5 text-[#8B2D6C] rounded focus:ring-[#8B2D6C]"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium text-[#2C1B3A]">{SINGLE_COURSE.title}</p>
+                        <p className="text-sm text-[#8F82B0] mt-1">₹499</p>
+                      </div>
+                    </div>
                   </div>
                   <div className="mt-6 p-4 bg-[#F1E8FF] rounded-lg">
                     <div className="flex justify-between items-center">

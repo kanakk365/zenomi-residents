@@ -5,7 +5,6 @@ interface SignupData {
   email: string;
   password: string;
   ownerName: string;
-  licenseNumber: string;
   position: string;
   website?: string;
 }
@@ -20,7 +19,7 @@ interface Clinician {
   email: string;
   clinicianName: string;
   ownerName: string;
-  licenseNumber: string;
+  licenseNumber?: string;
   position: string;
   website?: string;
 }

@@ -6,7 +6,7 @@ interface Clinician {
   email: string;
   clinicianName: string;
   ownerName: string;
-  licenseNumber: string;
+  licenseNumber?: string;
   position: string;
   website?: string;
 }
