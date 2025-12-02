@@ -34,7 +34,7 @@ interface AuthResponse {
 const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export async function signup(data: SignupData): Promise<AuthResponse> {
-  const response = await fetch(`${baseURL}/clinicians/auth/register`, {
+  const response = await fetch(`${baseURL}/residents/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export async function signup(data: SignupData): Promise<AuthResponse> {
 }
 
 export async function login(data: LoginData): Promise<AuthResponse> {
-  const response = await fetch(`${baseURL}/clinicians/auth/login`, {
+  const response = await fetch(`${baseURL}/residents/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export async function login(data: LoginData): Promise<AuthResponse> {
 }
 
 export async function getProfile(accessToken: string): Promise<Clinician> {
-  const response = await fetch(`${baseURL}/clinicians/auth/profile`, {
+  const response = await fetch(`${baseURL}/residents/auth/profile`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ interface CoursesResponse {
 }
 
 export async function getCourses(accessToken: string): Promise<CoursesResponse> {
-  const response = await fetch(`${baseURL}/clinicians/courses`, {
+  const response = await fetch(`${baseURL}/residents/courses`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ export async function checkoutStandard(
 ): Promise<CheckoutResponse> {
   const amount = courseIds.length * 499;
   
-  const response = await fetch(`${baseURL}/payments/clinicians/checkout/standard`, {
+  const response = await fetch(`${baseURL}/payments/residents/checkout/standard`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ export async function checkoutPremium(
 ): Promise<CheckoutResponse> {
   const amount = 499 * 6;
   
-  const response = await fetch(`${baseURL}/payments/clinicians/checkout/premium`, {
+  const response = await fetch(`${baseURL}/payments/residents/checkout/premium`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
